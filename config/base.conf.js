@@ -68,17 +68,6 @@ const getHtml = () => { // 生成多页面的 html 文件
     return arr
 }
 
-const getFilesName = () => { // 获取多页面文件名字
-    let filesName = []
-    files.forEach(file => {
-        let dirName = path.dirname(file) // main.js 父级文件夹名字
-        let fileName = dirName.substring(dirName.lastIndexOf('\/') + 1)
-
-        filesName.push('/' + fileName.split('.')[0])
-    })
-    return filesName
-}
-
 
 module.exports = {
     base: {
@@ -88,7 +77,6 @@ module.exports = {
     },
     entry: getEntry(), // 多页面入口文件
     html: getHtml(), // 多页面 html
-    prerender: getFilesName(), // 预渲染页面文件
     dev: {
         useEslint: true,
         host: getIp(),

@@ -9,11 +9,6 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCss = require('optimize-css-assets-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 
-// 静态页面生成器 cnpm 
-const PrerenderSPAPlugin = require('prerender-spa-plugin')
-const Renderer = PrerenderSPAPlugin.PuppeteerRenderer
-
-console.log(config.prerender)
 
 module.exports = merge(baseWebpackConfig, {
     mode: 'production', // 启用生产模式配置
@@ -30,7 +25,7 @@ module.exports = merge(baseWebpackConfig, {
     plugins: [
         new CleanWebpackPlugin(
             [ // 删除匹配的文件
-                `${config.base.filePath}/*.html`, 
+                `${config.base.filePath}/*.html`,  
                 `${config.base.filePath}/static`, 
                 `${config.base.filePath}/download`, 
                 `${config.base.filePath}/rule`, // 删除以上几个复制过来的文件 
@@ -39,6 +34,7 @@ module.exports = merge(baseWebpackConfig, {
                 `${config.base.filePath}/img`, 
                 `${config.base.filePath}/fonts`,  
                 `${config.base.filePath}/media`,
+                `${config.base.filePath}/source`,
                 `${config.base.filePath}/public`,
             ], 
             {
@@ -65,25 +61,6 @@ module.exports = merge(baseWebpackConfig, {
                 // debug: "debug" // 是否打印复制的详细信息
             }
         ),
-        new PrerenderSPAPlugin({
-            // 生成文件的路径，也可以与webpakc打包的一致。
-            // 下面这句话非常重要！！！
-            // 这个目录只能有一级，如果目录层次大于一级，在生成的时候不会有任何错误提示，在预渲染的时候只会卡着不动。
-            staticDir: path.join(__dirname, '../dist'),
-
-            // 对应自己的路由文件，比如a有参数，就需要写成 /a/param1。
-            routes: config.prerender,
-
-            // 这个很重要，如果没有配置这段，也不会进行预编译
-            renderer: new Renderer({
-                inject: {
-                    foo: 'bar'
-                },
-                headless: false,
-                // 在 main.js 中 document.dispatchEvent(new Event('render-event'))，两者的事件名称要对应上。
-                renderAfterDocumentEvent: 'render-event'
-            })
-        }),
         new webpack.DllReferencePlugin({
             manifest: require(`../${config.base.filePath}/js/vendor.manifest.json`),
             context: path.join(__dirname, '..'), // 和dllplugin里面的context一致
